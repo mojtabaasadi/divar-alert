@@ -1,5 +1,4 @@
 import os 
-os.environ['SEARCH_CONDITIONS'] = "shiraz"
 from divar import main
 import schedule
 import time
