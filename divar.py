@@ -18,18 +18,19 @@ if os.environ.get("HTTPS_PROXY", ""):
 divar_session = requests.Session()
 divar_session.headers = {
     **divar_session.headers,
-    'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:102.0) Gecko/20100101 Firefox/102.0',
-    'Accept': 'application/json, text/plain, */*',
-    'Accept-Language': 'en-US,en;q=0.5',
-    'Content-Type':'text/html; charset=utf-8',
-    'Origin': 'https://divar.ir',
-    'Sec-Fetch-Dest': 'empty',
-    'Sec-Fetch-Mode': 'cors',
-    'Sec-Fetch-Site': 'same-site',
-    'Referer': 'https://divar.ir/',
-    'Connection': 'keep-alive',
-    'Cookie': 'did=250dfd5c-8c63-4a38-b770-92ee16bdb6e6; _ga=GA1.1.2019623298.1642936967; multi-city=shiraz%7C; city=shiraz; _gcl_au=1.1.710975817.1654779139; _ga_SXEW31VJGJ=GS1.1.1659170439.5.1.1659170749.0; token=eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ1c2VyIjoiMDkzNTA4MjMwMjMiLCJpc3MiOiJhdXRoIiwiaWF0IjoxNjU5MTcwNDQwLCJleHAiOjE2NjA0NjY0NDAsInZlcmlmaWVkX3RpbWUiOjE2NTg3MjkwNzQsInVzZXItdHlwZSI6InBlcnNvbmFsIiwidXNlci10eXBlLWZhIjoiXHUwNjdlXHUwNjQ2XHUwNjQ0IFx1MDYzNFx1MDYyZVx1MDYzNVx1MDZjYyIsInNpZCI6IjRmMzdlMjEzLTU1N2ItNDViYS1hMzU1LTA1NWFjNTJkYWMwZSJ9.Uw1xtn9-2VBOxD3mtlEN7gsoubKG4OmmM9Pzc7hPOD0; _gid=GA1.2.491932182.1659170440; _gat_gtag_UA_32884252_2=1',
-    'TE': 'trailers'
+    'User-Agent':'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:121.0) Gecko/20100101 Firefox/121.0',
+    'Accept':'application/json, text/plain, */*',
+    'Accept-Language':'en-US,en;q=0.5',
+    'Accept-Encoding':'gzip, deflate, br',
+    'Referer':'https://divar.ir/',
+    'Origin':'https://divar.ir',
+    'Connection':'keep-alive',
+    'Sec-Fetch-Dest':'empty',
+    'Sec-Fetch-Mode':'cors',
+    'Sec-Fetch-Site':'same-site',
+    'Pragma':'no-cache',
+    'Cache-Control':'no-cache',
+    'TE':'trailers',
 }
 
 
@@ -66,10 +67,15 @@ def main():
         sent = prev.read()
         tosend = []
         r= divar_session.get(URL)
-        soup = BeautifulSoup(r.text, 'html.parser')
-        for ad in soup.select('.virtual-infinite-scroll [class^=post-card-item]'):
-            code = ad.select('div>a')[0].get('href').split('/')[-1]
-            title = ad.select_one('h2').get_text()
+        posts = []
+        try:
+            data = r.json()
+            posts = data['web_widgets']['post_list']
+        except Exception as e:
+            print(e)
+        for ad in posts:
+            code = ad['data']['token']
+            title = ad['data']['title']
             url = 'https://divar.ir/v/'+code
             if sent.find(url)==-1:
                 if len(DISCORD_HOOK):
