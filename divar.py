@@ -3,7 +3,7 @@ from urllib import request
 from bs4 import BeautifulSoup
 import requests,os,time,random
 
-URL = "https://divar.ir/s/{SEARCH_CONDITIONS}".format(**os.environ)
+URL = "https://api.divar.ir/v8/web-search/{SEARCH_CONDITIONS}".format(**os.environ)
 DISCORD_HOOK = os.environ.get("DISCORD_HOOK", "")
 BOT_TOKEN = os.environ.get("BOT_TOKEN", "") 
 BOT_CHATID = os.environ.get('BOT_CHATID', "")
