@@ -1,9 +1,9 @@
 from email import header
 from urllib import request
 from bs4 import BeautifulSoup
-import requests,os,time,random
+import requests,os,time,random,json
 
-URL = "https://api.divar.ir/v8/web-search/{SEARCH_CONDITIONS}".format(**os.environ)
+URL = "https://divar.ir/s/{SEARCH_CONDITIONS}".format(**os.environ)
 DISCORD_HOOK = os.environ.get("DISCORD_HOOK", "")
 BOT_TOKEN = os.environ.get("BOT_TOKEN", "") 
 BOT_CHATID = os.environ.get('BOT_CHATID', "")
@@ -69,14 +69,15 @@ def main():
         r= divar_session.get(URL)
         posts = []
         try:
-            data = r.json()
-            posts = data['web_widgets']['post_list']
+            data = r.text
+            r.soup = BeautifulSoup(data, 'html.parser')
+            json_text = soup.find_all('script',type= "application/ld+json")[-1].get_text()
+            posts = json.loads(json_text)
         except Exception as e:
             print(e)
         for ad in posts:
-            code = ad['data']['token']
-            title = ad['data']['title']
-            url = 'https://divar.ir/v/'+code
+            url = ad['url']
+            title = ad['name']
             if sent.find(url)==-1:
                 if len(DISCORD_HOOK):
                     send_discrod_message(title +'\n'+url)
