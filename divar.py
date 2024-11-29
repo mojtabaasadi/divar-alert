@@ -1,7 +1,7 @@
 from email import header
 from urllib import request
 from bs4 import BeautifulSoup
-import requests,os,time,random,json
+import requests,os,time,random,json,codecs
 
 URL = "https://divar.ir/s/{SEARCH_CONDITIONS}".format(**os.environ)
 DISCORD_HOOK = os.environ.get("DISCORD_HOOK", "")
@@ -62,7 +62,7 @@ def send_discrod_message(content):
 
 
 def main():
-    with open(os.path.join(os.path.dirname(os.path.realpath(__file__)),'prev.txt'),'a+') as prev:
+    with codecs.open(os.path.join(os.path.dirname(os.path.realpath(__file__)),'prev.txt'),'a+','utf8') as prev:
         prev.seek(0)
         sent = prev.read()
         tosend = []
